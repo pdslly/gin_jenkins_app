@@ -1,8 +1,8 @@
 pipeline {
   agent {
     docker {
-      image 'golang:1.17'
-      args '-p 3000:3000'
+      image 'golang:1.14.2'
+      args '-e GOPROXY=https://goproxy.io -e GO111MODULE=on -v ${pwd}:go/src/app'
     }
   }
   stages {
