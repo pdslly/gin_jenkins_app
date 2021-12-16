@@ -9,8 +9,12 @@ import (
 	"github.com/gin-contrib/sessions/redis"
 	"github.com/gin-gonic/gin"
 
-	_ "github.com/joho/godotenv/autoload"
+	"github.com/joho/godotenv"
 )
+
+func init() {
+	godotenv.Load(".env." + gin.Mode())
+}
 
 func helloGet(c *gin.Context) {
 	session := sessions.Default(c)
