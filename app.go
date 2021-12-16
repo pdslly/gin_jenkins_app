@@ -2,8 +2,11 @@ package main
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
+
+	_ "github.com/joho/godotenv/autoload"
 )
 
 func main() {
@@ -11,7 +14,8 @@ func main() {
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "hello worldddd",
+			"port":    os.Getenv("APP_PORT"),
 		})
 	})
-	r.Run(":8080")
+	r.Run(os.Getenv("APP_PORT"))
 }
