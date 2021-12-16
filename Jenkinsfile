@@ -11,5 +11,10 @@ pipeline {
         sh 'go build -o app'
       }
     }
+    stage('Deploy') {
+      steps {
+        sh 'docker restart ginapp'
+      }
+    }
   }
 }
