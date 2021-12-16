@@ -1,21 +1,45 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"os"
 
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/redis"
 	"github.com/gin-gonic/gin"
 
 	_ "github.com/joho/godotenv/autoload"
 )
 
+func helloGet(c *gin.Context) {
+	session := sessions.Default(c)
+
+	var count int
+	v := session.Get("count")
+
+	if v == nil {
+		count = 0
+	} else {
+		count = v.(int)
+		count++
+	}
+
+	session.Set("count", count)
+	session.Save()
+
+	c.JSON(http.StatusOK, gin.H{"hello": session.Get("count")})
+}
+
 func main() {
 	r := gin.Default()
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "hello world",
-			"port":    os.Getenv("APP_REDIS_ADDR"),
-		})
-	})
+	store, err := redis.NewStore(10, "tcp", os.Getenv("APP_REDIS_ADDR"), "", []byte("secret"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	r.Use(sessions.Sessions("mysession", store))
+
+	r.GET("/hello", helloGet)
+
 	r.Run(os.Getenv("APP_PORT"))
 }
